@@ -59,4 +59,6 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True # Frontend connection enable
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
