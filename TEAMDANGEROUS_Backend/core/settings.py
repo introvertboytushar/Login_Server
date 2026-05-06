@@ -7,6 +7,12 @@ SECRET_KEY = 'django-insecure-team-dangerous-proto-key' # Production-e change ko
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://login-server-team-dangerous.vercel.app',
+    'https://customsms-it.vercel.app',
+    'https://customsms.pro.bd',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
