@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 
 User = get_user_model()
 
@@ -31,6 +32,8 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         
         if user is not None:
+            if not user.is_active:
+                return Response({"error": "ACCESS BLOCKED // ACCOUNT SUSPENDED"}, status=status.HTTP_403_FORBIDDEN)
             refresh = RefreshToken.for_user(user)
             return Response({
                 'access': str(refresh.access_token),
@@ -40,3 +43,11 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         
         return Response({"error": "ACCESS DENIED: INVALID SIGNATURE"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class VerifyView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        if not request.user.is_active:
+            return Response({"error": "BLOCKED"}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"status": "ACTIVE", "username": request.user.username})
