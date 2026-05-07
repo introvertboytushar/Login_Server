@@ -1,9 +1,10 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+
+User = get_user_model()
 
 class RegisterView(APIView):
     def post(self, request):
@@ -11,12 +12,12 @@ class RegisterView(APIView):
         try:
             if User.objects.filter(username=data['username']).exists():
                 return Response({"error": "USERNAME ALREADY EXISTS"}, status=status.HTTP_400_BAD_REQUEST)
-
             user = User.objects.create_user(
                 username=data['username'],
                 email=data.get('email', ''),
                 password=data['password'],
-                first_name=data.get('full_name', '') # Collects full name
+                first_name=data.get('full_name', ''),
+                phone=data.get('phone', '')
             )
             return Response({"msg": "PROTOCOL INITIATED: USER REGISTERED"}, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -32,7 +33,7 @@ class LoginView(APIView):
         if user is not None:
             refresh = RefreshToken.for_user(user)
             return Response({
-                'access': str(refresh.access_token), # JWT Access Token
+                'access': str(refresh.access_token),
                 'refresh': str(refresh),
                 'username': user.username,
                 'status': 'ACCESS GRANTED'
